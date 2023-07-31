@@ -52,7 +52,8 @@ INSTALLED_APPS = [
     'storage',
     'meals',
     'order',
-    'kitchen'
+    'kitchen',
+    'waiter'
 ]
 
 AUTH_USER_MODEL = 'core.CustomUser'
