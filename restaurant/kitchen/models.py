@@ -11,4 +11,8 @@ class KitchenOrder(models.Model):
     order_id = models.ForeignKey(Order, on_delete=models.CASCADE)
     order_status = models.CharField(choices=STATUS, default='WAITING', max_length=20)
     is_done = models.BooleanField(default=False)
-    
+    class Meta:
+        
+         permissions = [
+            ('codename', 'kitchenorder'),
+        ]

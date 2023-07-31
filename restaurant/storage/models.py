@@ -5,6 +5,12 @@ from django.db import models
 class ProductManager(models.Manager):
     def get_by_natural_key(self, name, product_type):
         return self.get(name=name, product_type=product_type)
+    
+    class Meta:
+        
+         permissions = [
+            ('codename', 'productmanager'),
+        ]
 
 
 class Product(models.Model):
@@ -50,3 +56,9 @@ class ProductInStorage(models.Model):
 
     def __str__(self):
         return f'{self.number_of_product}_{self.product_id.name}'
+    
+    class Meta:
+        
+         permissions = [
+            ('codename', 'productinstorage'),
+        ]

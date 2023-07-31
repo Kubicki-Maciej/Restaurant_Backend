@@ -43,6 +43,14 @@ class OrderedMeals(models.Model):
 
     def __str__(self) -> str:
         return f"{self.id}_{self.meal_id.meal_name}"
+    
+    class Meta:
+        
+         permissions = [
+            ('codename', 'orderedmeals'),
+        ]
+
+
 
 
 

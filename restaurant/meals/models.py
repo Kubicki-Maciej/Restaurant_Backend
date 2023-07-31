@@ -24,12 +24,26 @@ class CategoryMenu(models.Model):
     category_name = models.CharField(max_length=255, blank=True, null=True)
     category_explenation = models.TextField()
 
+    class Meta:
+        
+         permissions = [
+            ('codename', 'categorymenu'),
+        ]
+
+
     def __str__(self) -> str:
         return self.category_name
 
 class MealInCategory(models.Model):
     meal_id = models.ForeignKey(Meal, on_delete=models.CASCADE)
-    category_menu_id = models.ForeignKey(CategoryMenu, on_delete=models.CASCADE)    
+    category_menu_id = models.ForeignKey(CategoryMenu, on_delete=models.CASCADE)   
+
+    class Meta:
+        
+         permissions = [
+            ('codename', 'mealincategory'),
+        ]
+
 
 
 
