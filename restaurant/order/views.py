@@ -8,8 +8,17 @@ from order.models import Order
 from order.serializers import OrderSerializer, CreateOrderSerializer
 from kitchen.models import KitchenOrder
 from core.models import CustomUser
+
+
+from django.contrib.auth.decorators import login_required, permission_required
+
+
+
+
 # Create your views here.
 
+@login_required
+@permission_required('order.add_order', raise_exception=True)
 @api_view(['POST'])
 def create_order(request):
     if request.method == "POST":
