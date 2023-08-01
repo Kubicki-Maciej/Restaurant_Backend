@@ -27,6 +27,11 @@ class UserRegisterSerializer(serializers.ModelSerializer):
 
 
 class UserLoginSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = UserModel
+        fields = '__all__'
+    
     username = serializers.CharField()
     password = serializers.CharField()
 
