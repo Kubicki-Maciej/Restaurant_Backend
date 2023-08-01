@@ -1,15 +1,20 @@
 #django
 from django.shortcuts import render
 from django.contrib.auth import get_user_model, login, logout
+from django.contrib.auth.models import Group
+
 # rest
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import permissions, status
 from rest_framework.authentication import SessionAuthentication
+from rest_framework.decorators import api_view
 # Serializer
-from core.serializers import UserLoginSerializer, UserRegisterSerializer, UserSerializer
+from core.serializers import UserLoginSerializer, UserRegisterSerializer, UserSerializer, UserGroupAddSerializer, UserSerializer
 # Validation
 from core.validations import validate_password, custom_validation, validate_username 
+
+from core.models import AbstractUser, CustomUserManager
 
 class UserRegister(APIView):
     permission_classes = (permissions.AllowAny,)
@@ -54,3 +59,32 @@ class UserView(APIView):
 	def get(self, request):
 		serializer = UserSerializer(request.user)
 		return Response({'user': serializer.data}, status=status.HTTP_200_OK)
+
+
+""" ADD PERMISIONS ONLY FOR ADMIN / OWNER """
+
+@api_view(['POST'])	
+def set_user_to_group(request):
+    if request.method == 'POST':
+        data= request.data
+        group_name = data['group']
+        user_object_id = data['user_id']
+        serializer = UserGroupAddSerializer(data=data)
+        serializer.set_user_to_group(user_object_id, group_name)
+
+        return Response({f'Użytkownik {user_object_id} dodany do grupy {group_name}'})
+    
+    return Response({'Something went wrong'})
+
+
+#{ "group": "waiters" , "user_id": 2}
+@api_view(['GET'])
+def get_all_users(request):
+	if request.method == 'GET':
+		
+		Users = get_user_model()
+		all_users = Users.objects.all()
+		if all_users:
+			serializer = UserSerializer(all_users, many=True)
+			return Response(serializer.data)
+		return Response({"Error with geting all users"})

@@ -31,6 +31,11 @@ class CustomUserManager(BaseUserManager):
 
 
 class CustomUser(AbstractUser):
+
+    class Meta:
+        permissions= (("tier_1", "Can view 3 suggestions"), ("tier_2", "Can view 6 suggestions"),
+        # You can add other custom permissions as required
+        )
     
 
     STATUS = (
