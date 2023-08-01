@@ -17,8 +17,8 @@ from django.contrib.auth.decorators import login_required, permission_required
 
 # Create your views here.
 
-@login_required
-@permission_required('order.add_order', raise_exception=True)
+# @login_required
+# @permission_required('order.add_order', raise_exception=True)
 @api_view(['POST'])
 def create_order(request):
     if request.method == "POST":

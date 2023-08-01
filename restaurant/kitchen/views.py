@@ -48,6 +48,8 @@ def is_done_kitchen_order(request, id):
         print(f'data changed for {id}_KitchenOrder')
         return Response({'Data changed'})
 
+
+# create POST insted of GET
 @api_view(['GET'])
 def in_progress_kitchen_order(request, id):
     """ change kitchen order order_status to done"""
