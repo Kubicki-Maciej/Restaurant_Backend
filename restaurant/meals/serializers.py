@@ -75,6 +75,18 @@ class FullInformationMealSerializer(MealSerializer):
             id=product['product_id']
             pis = ProductInStorage.objects.filter(id=id).filter(product_waste=False).exclude(number_of_product=0)
             s = PriceProductInStorageSerializer(pis, many=True)
+            print(s)
+            print(s)
+            print(s)
+            print(s)
+            print(s)
+            print(s)
+            print(s)
+            print(s)
+            print(s)
+            print(s)
+            print(s)
+            print(s)
             p = s.data[0]['product_price']
             price += float(weight) * float(p)       
 
