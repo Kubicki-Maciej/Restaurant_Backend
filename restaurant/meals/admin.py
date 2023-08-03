@@ -4,7 +4,7 @@ from meals.models import Meal, Ingredient, CategoryMenu, MealInCategory
   
 
 class IngredientAdmin(admin.ModelAdmin):
-    list_display = ['get_product_name','meal_id','weight_pices_used']
+    list_display = ['id','get_product_name','meal_id','weight_pices_used']
 
     def get_product_name(self, obj):
         return obj.product_id.name
@@ -14,7 +14,7 @@ class IngredientAdmin(admin.ModelAdmin):
     
 
 class MealAdmin(admin.ModelAdmin):
-    list_display = ['meal_name', 'meal_cost']
+    list_display = ['id','meal_name', 'meal_cost']
 
     # def get_products(self, obj):
     #     return "\n".join([p.name for p in obj.product_id.all()])

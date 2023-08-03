@@ -4,11 +4,11 @@ from storage.models import Product, ProductInStorage , Storage
 # Register your models here.
 
 class ProductAdmin(admin.ModelAdmin):
-    list_display = ['name','product_type']
+    list_display = ['id','name','product_type']
 
 
 class ProductInStorageAdmin(admin.ModelAdmin):
-    list_display = [ 'get_product_name' ,  'get_storage_name', 'get_product_type']
+    list_display = ['id', 'get_product_name' ,  'get_storage_name', 'get_product_type']
 
     def get_product_name(self, obj):
         return obj.product_id.name

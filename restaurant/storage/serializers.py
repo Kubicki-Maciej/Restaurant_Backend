@@ -53,6 +53,10 @@ class CreateProductInStorageSerializer(serializers.ModelSerializer):
 
 
 class PriceProductInStorageSerializer(serializers.ModelSerializer):
+    
     class Meta:
         model=ProductInStorage
         fields=['product_price']
+
+    def price(self, obj):
+        return obj.product_price

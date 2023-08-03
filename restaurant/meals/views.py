@@ -22,6 +22,7 @@ def get_all_meals(request):
     else:
         return Response({'nic'})
     
+    
 @api_view(['GET',])
 def get_all_meals_info(request):
     if request.method == "GET":
@@ -37,7 +38,7 @@ def get_all_meals_info(request):
 
 @api_view(['GET',])
 def create_meal(request):
-    # we need change here 
+    # we need change here to POST geting load info about products
     data = {    
     "meal_name": "Frytki",
     "meal_cost": 10.00,
@@ -62,6 +63,10 @@ def create_meal(request):
     else:
         return Response({'nic'})
     
+@api_view(['GET',])
+def get_categorys_and_all_meals(reueqst):
+    pass
+
 
 class CreateMeal(APIView):
     serializer_class = CreateMealSerializer
