@@ -6,8 +6,8 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from meals.models import Meal, Ingredient
-from meals.serializers import MealSerializer, FullInformationMealSerializer, CreateMealSerializer
+from meals.models import Meal, Ingredient, CategoryMenu
+from meals.serializers import MealSerializer, FullInformationMealSerializer, CreateMealSerializer, CategorySerializer
 # Create your views here.
 
 @api_view(['GET',])
@@ -65,7 +65,12 @@ def create_meal(request):
     
 @api_view(['GET',])
 def get_categorys_and_all_meals(reueqst):
-    pass
+    
+    if reueqst.method =="GET":
+        all_category = CategoryMenu.objects.all()
+        serializer = CategorySerializer(all_category, many=True)
+        return Response(serializer.data)
+
 
 
 class CreateMeal(APIView):

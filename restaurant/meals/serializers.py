@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from meals.models import Meal, Ingredient, CategoryMenu
+from meals.models import Meal, Ingredient, CategoryMenu, MealInCategory
 from storage.models import ProductInStorage
 from storage.serializers import PriceProductInStorageSerializer
 
@@ -97,6 +97,23 @@ class FullInformationMealSerializer(MealSerializer):
 
 
 class CategorySerializer(serializers.ModelSerializer):
+    all_meal_in_category = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
         model=CategoryMenu
+        fields = ['category_name','category_explenation','all_meal_in_category']
+
+    def get_all_meal_in_category(self, obj):
+        meals_in_category = MealInCategory.objects.filter(category_menu_id=obj.id)
+        serializers = MealInCategorySerializer(meals_in_category, many=True)
+        return serializers.data
+        
+    
+class MealInCategorySerializer(serializers.ModelSerializer):
+    meal_name = serializers.SerializerMethodField(read_only=True)
+    class Meta:
+        model=MealInCategory
+        fields = ['meal_id', 'category_menu_id', 'meal_name']
+
+    def get_meal_name(self,obj):
+        return obj.meal_id.meal_name

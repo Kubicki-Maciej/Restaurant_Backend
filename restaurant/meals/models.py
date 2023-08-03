@@ -39,7 +39,6 @@ class MealInCategory(models.Model):
     category_menu_id = models.ForeignKey(CategoryMenu, on_delete=models.CASCADE)   
 
     class Meta:
-        
          permissions = [
             ('codename', 'mealincategory'),
         ]
