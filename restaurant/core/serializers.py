@@ -41,11 +41,22 @@ class UserLoginSerializer(serializers.ModelSerializer):
             raise ValueError('User not found')
         return user
 
+    def return_user_id(self):
+        return self.id
 
 class UserSerializer(serializers.ModelSerializer):
+    groups_name = serializers.SerializerMethodField(read_only=True)
     class Meta:
         model = UserModel
-        fields = ('username', 'email', 'groups', 'status', 'role', 'email', 'last_login')
+        fields = ('id','username', 'email', 'groups', 'status', 'role', 'email', 'last_login', 'groups_name')
+
+    def get_groups_name(self, obj):
+        # user = UserModel.objects.get(id=obj.id)
+        groups = Group.objects.filter(user=obj)
+        groups_list = []
+        for group in groups:
+            groups_list.append({"name":group.name})
+        return groups_list
 
 
 class UserGroupAddSerializer(serializers.ModelSerializer):

@@ -69,7 +69,7 @@ class FullInformationMealSerializer(MealSerializer):
 
         i = Ingredient.objects.filter(meal_id = obj.id)
         serializer = IngredientSerializer(i, many=True)
-       
+        
         for product in serializer.data:
             weight=product['weight_pices_used']
             id=product['product_id']
