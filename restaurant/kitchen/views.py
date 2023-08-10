@@ -39,11 +39,19 @@ def test_kitchen_orders(request):
 @api_view(['GET'])
 def is_done_kitchen_order(request, id):
     """ change kitchen order order_status to done"""
-    print('zadzialo sie')
     if request.method == 'GET':
-        kitchen_order = KitchenOrder.objects.get(pk=id)
-
+        kitchen_order = KitchenOrder.objects.get(order_id=id)
         kitchen_order.order_status = "DONE"
+        kitchen_order.save()
+        print(f'data changed for {id}_KitchenOrder')
+        return Response({'Data changed'})
+    
+@api_view(['GET'])
+def is_waiting_kitchen_order(request, id):
+    """ change kitchen order order_status to done"""
+    if request.method == 'GET':
+        kitchen_order = KitchenOrder.objects.get(order_id=id)
+        kitchen_order.order_status = "WAITING"
         kitchen_order.save()
         print(f'data changed for {id}_KitchenOrder')
         return Response({'Data changed'})
@@ -54,7 +62,7 @@ def is_done_kitchen_order(request, id):
 def in_progress_kitchen_order(request, id):
     """ change kitchen order order_status to done"""
     if request.method == 'GET':
-        kitchen_order = KitchenOrder.objects.get(pk=id)
+        kitchen_order = KitchenOrder.objects.get(order_id=id)
 
         kitchen_order.order_status = "IN_PROGRESS"
         kitchen_order.save()
