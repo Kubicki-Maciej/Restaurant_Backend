@@ -94,17 +94,3 @@ class CreateMeal(APIView):
             return Response({'Bad Request': 'Invalid data...'}, status=status.HTTP_400_BAD_REQUEST)
 
 
-"""
-
-view that use ingridiets (product)
-- take name meal 
-- take 
-
-"""
-
-
-"""
-
-view that 
-
-"""

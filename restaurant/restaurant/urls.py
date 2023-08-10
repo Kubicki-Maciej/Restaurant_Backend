@@ -24,5 +24,6 @@ urlpatterns = [
     path('order/', include("order.urls")),
     path('kitchen/', include("kitchen.urls")),
     path('api/', include("core.urls")),
-    path('api-auth/', include("rest_framework.urls", namespace='rest_framework'))
+    path('api-auth/', include("rest_framework.urls", namespace='rest_framework')),
+    path('waiter/', include("waiter.urls" ))
 ]

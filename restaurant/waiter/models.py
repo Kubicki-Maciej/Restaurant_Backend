@@ -9,6 +9,8 @@ class Waiter(models.Model):
     user_id = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     waiter_name = models.CharField(max_length=100, null=False)
 
+    def __str__(self) -> str:
+        return str(self.user_id)
 
 class WaiterOrder(models.Model):
 

@@ -117,3 +117,9 @@ class MealInCategorySerializer(serializers.ModelSerializer):
 
     def get_meal_name(self,obj):
         return obj.meal_id.meal_name
+
+
+class OrderMealSerialzer(serializers.ModelSerializer):
+    class Meta:
+        model=Meal
+        fields = ['id']

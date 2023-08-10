@@ -11,7 +11,7 @@ class OrderSerializer(serializers.ModelSerializer):
 
     class Meta:
         model=Order
-        fields = ['order_number', 'ean_code', 'order_start', 'user_name']
+        fields = ['id', 'order_number', 'ean_code', 'order_start', 'user_name']
 
     def get_user_name(self, obj):
         user_id = obj.user_id.id
