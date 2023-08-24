@@ -3,7 +3,8 @@ import os
 
 class IndexReader:
 
-    def __init__(self, last_shelf, last_vagetable, last_meat, shelf_bar_code, vegetables, meat, ean_order, ean_order_number):
+    def __init__(self, last_shelf, last_vagetable, last_meat, shelf_bar_code, vegetables, meat, ean_order, ean_order_number,number_order):
+        self.number_order = number_order 
         self.ean_order = ean_order 
         self.ean_order_number = ean_order_number
         self.last_shelf = last_shelf
@@ -32,6 +33,11 @@ class IndexReader:
         self.last_shelf += 1
         self.save_data_to_json()
         return self.last_shelf
+    
+    def generate_order_number(self):
+        self.number_order += 1
+        self.save_data_to_json()
+        return self.number_order
 
     def generate_vagetable_bar_code(self):
         self.last_vagetable += 1

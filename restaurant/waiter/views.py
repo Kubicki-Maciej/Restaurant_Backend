@@ -12,8 +12,8 @@ from core.models import CustomUser
 
 from meals.serializers import OrderMealSerialzer
 from order.serializers import OrderSerializer, CreateOrderSerializer, OrderedMealsSerializer
-from waiter.serializer import WaiterOrderSerializer, WaiterSerializer
-
+from waiter.serializer import WaiterOrderSerializer, WaiterSerializer, WaiterOrderWithAllMealsSerializer
+from core.barcode import object_index
 from waiter.validations import get_orders, get_waiter
 # Create your views here.
 
@@ -21,7 +21,7 @@ from waiter.validations import get_orders, get_waiter
 @api_view(['POST'])
 def get_all_waiter_orders(request):
     if request.method =='POST':
-        waiter_id = get_waiter(request.data['waiter'])['user_id']
+        waiter_id = request.data['waiter']
         orders = Order.objects.filter(user_id=waiter_id)
         serialzier = OrderSerializer(orders, many=True)
         return Response(serialzier.data)
@@ -34,7 +34,7 @@ def create_waiter_order(request):
         orders = get_orders(request.data['ordered_items'])
         get_user = CustomUser.objects.get(id=waiter['user_id'])
         get_waiter_obj = Waiter.objects.get(user_id = get_user)      
-        created_order = Order.objects.create(user_id=get_user ,ean_code=101010101 )
+        created_order = Order.objects.create(user_id=get_user ,ean_code=object_index.generate_ean_order_number(), order_number=object_index.generate_order_number())
         for meal in orders:
             meal_obj  = Meal.objects.get(id=meal['id'])
             ordered_meal = OrderedMeals.objects.create(order_id=created_order, meal_id=meal_obj, number_of_meals=meal['number_of_meals'], comments=meal['comment'])
@@ -44,6 +44,16 @@ def create_waiter_order(request):
         
         return Response(f'data created {created_order}',status=status.HTTP_201_CREATED)
     
+@api_view(['POST'])
+def get_all_waiter_orders(request):
+    if request.method == 'POST':
+        waiter_id = request.data['waiter_id']
+        user = CustomUser.objects.get(id=waiter_id)
+        waiter = Waiter.objects.get(user_id=user)
+        waiter_orders = WaiterOrder.objects.filter(waiter_id=waiter).exclude(is_closed=True)
+        serializer = WaiterOrderWithAllMealsSerializer(waiter_orders, many=True)
+        return Response(serializer.data)
+
  
 @api_view(['POST'])
 def end_waiter_order(request):

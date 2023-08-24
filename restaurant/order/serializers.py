@@ -40,3 +40,17 @@ class OrderedMealsSerializer(serializers.ModelSerializer):
 
     def get_meal_name(self, obj):
         return obj.meal_id.meal_name
+    
+
+class OrderedWaiterMealsSerializer(serializers.ModelSerializer):
+    meals = serializers.SerializerMethodField(read_only=True)
+    class Meta:
+        model = Order
+        fields = ['id','order_start','ean_code','order_number', 'meals']
+
+    def get_meals(self,obj):       
+        # bad pratice but don't know how to repair it
+        objects_meals = OrderedMeals.objects.filter(order_id=obj)
+        serializer = OrderedMealsSerializer(many=True,data=objects_meals)
+        serializer.is_valid()
+        return serializer.data

@@ -16,3 +16,4 @@ class WaiterOrder(models.Model):
 
     waiter_id = models.ForeignKey(Waiter, on_delete=models.CASCADE)
     order_id = models.ForeignKey(Order, on_delete=models.CASCADE)
+    is_closed = models.BooleanField(default=False)
