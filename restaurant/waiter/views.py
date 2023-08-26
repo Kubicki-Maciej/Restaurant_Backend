@@ -45,12 +45,23 @@ def create_waiter_order(request):
         return Response(f'data created {created_order}',status=status.HTTP_201_CREATED)
     
 @api_view(['POST'])
-def get_all_waiter_orders(request):
+def get_all_waiter_orders_active(request):
     if request.method == 'POST':
         waiter_id = request.data['waiter_id']
         user = CustomUser.objects.get(id=waiter_id)
         waiter = Waiter.objects.get(user_id=user)
         waiter_orders = WaiterOrder.objects.filter(waiter_id=waiter).exclude(is_closed=True)
+        serializer = WaiterOrderWithAllMealsSerializer(waiter_orders, many=True)
+        return Response(serializer.data)
+
+ 
+@api_view(['POST'])
+def get_all_waiter_history_orders(request):
+    if request.method == 'POST':
+        waiter_id = request.data['waiter_id']
+        user = CustomUser.objects.get(id=waiter_id)
+        waiter = Waiter.objects.get(user_id=user)
+        waiter_orders = WaiterOrder.objects.filter(waiter_id=waiter).exclude(is_closed=False)
         serializer = WaiterOrderWithAllMealsSerializer(waiter_orders, many=True)
         return Response(serializer.data)
 
