@@ -30,20 +30,23 @@ def get_all_waiter_orders(request):
 @api_view(['POST'])
 def create_waiter_order(request):
     if request.method =='POST':
-        waiter = get_waiter(request.data['waiter'])
-        orders = get_orders(request.data['ordered_items'])
-        get_user = CustomUser.objects.get(id=waiter['user_id'])
+        waiter = request.data['waiter']
+        orders = request.data['order']['ordered_items']
+        print(waiter)
+        print(orders)
+        get_user = CustomUser.objects.get(id=waiter['id'])
         get_waiter_obj = Waiter.objects.get(user_id = get_user)      
         created_order = Order.objects.create(user_id=get_user ,ean_code=object_index.generate_ean_order_number(), order_number=object_index.generate_order_number())
         for meal in orders:
             meal_obj  = Meal.objects.get(id=meal['id'])
-            ordered_meal = OrderedMeals.objects.create(order_id=created_order, meal_id=meal_obj, number_of_meals=meal['number_of_meals'], comments=meal['comment'])
+            ordered_meal = OrderedMeals.objects.create(order_id=created_order, meal_id=meal_obj, number_of_meals=meal['number_of_meals'], comments=meal['comments'])
             ordered_meal.save()
         KitchenOrder.objects.create(order_id=created_order).save()
         WaiterOrder.objects.create(waiter_id=get_waiter_obj, order_id=created_order).save()
         
         return Response(f'data created {created_order}',status=status.HTTP_201_CREATED)
     
+
 @api_view(['POST'])
 def get_all_waiter_orders_active(request):
     if request.method == 'POST':

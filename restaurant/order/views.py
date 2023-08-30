@@ -4,7 +4,8 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from order.models import Order
+from order.validations import get_orders
+from order.models import Order, OrderedMeals
 from order.serializers import OrderSerializer, CreateOrderSerializer
 from kitchen.models import KitchenOrder
 from core.models import CustomUser
@@ -32,6 +33,37 @@ def create_order(request):
         return Response(serializer.data, status=status.HTTP_201_CREATED)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+@api_view(['POST'])
+def update_order(request):
+    if request.method == "POST":
+
+        order_id = request.data['orderId']
+        meals = get_orders(request.data['orderedMeals'])
+        print(meals)
+        print(meals)
+        print(meals)
+        print(meals)
+        print(type(order_id))
+        
+        obj_Order = Order.objects.get(pk=order_id)
+
+        objs_OrderedMeals = OrderedMeals.objects.filter(order_id=obj_Order)
+
+        for meal in meals:
+            print('meal')
+            print('meal')
+            print(meal)
+            print(type(meal['id']))
+            for obj_OrderedMeals in objs_OrderedMeals:
+                print(obj_OrderedMeals.id)
+                print(type(obj_OrderedMeals.id))
+                if obj_OrderedMeals.id == meal['id']:
+                    print('change meal')
+                    obj_OrderedMeals.number_of_meals = meal.number_of_meals
+                    obj_OrderedMeals.save()
+
+        return Response(f'{order_id} updated')
+        
 
 
 class CreateOrderView(APIView):
@@ -71,3 +103,4 @@ class CreateOrderView(APIView):
         else:
             return Response({'Bad Request': 'Invalid data...'}, status=status.HTTP_400_BAD_REQUEST)
         
+
