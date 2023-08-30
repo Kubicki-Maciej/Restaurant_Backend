@@ -2,6 +2,7 @@ from django.db import models
 from core.models import CustomUser
 from meals.models import Meal
 
+
 # Create your models here.
 # Create https://www.youtube.com/watch?v=-yL-lhxA6vw python file to generate ean
 

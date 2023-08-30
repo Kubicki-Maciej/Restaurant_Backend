@@ -1,15 +1,18 @@
 from django.shortcuts import render
+from django.utils import timezone
+
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from order.validations import get_orders
+from waiter.models import Waiter, WaiterOrder
+from meals.models import Meal
 from order.models import Order, OrderedMeals
 from order.serializers import OrderSerializer, CreateOrderSerializer
 from kitchen.models import KitchenOrder
 from core.models import CustomUser
-
 
 from django.contrib.auth.decorators import login_required, permission_required
 
@@ -36,35 +39,35 @@ def create_order(request):
 @api_view(['POST'])
 def update_order(request):
     if request.method == "POST":
-
+        # find diffrance between update and order ?
         order_id = request.data['orderId']
         meals = get_orders(request.data['orderedMeals'])
-        print(meals)
-        print(meals)
-        print(meals)
-        print(meals)
-        print(type(order_id))
-        
         obj_Order = Order.objects.get(pk=order_id)
-
-        objs_OrderedMeals = OrderedMeals.objects.filter(order_id=obj_Order)
-
         for meal in meals:
-            print('meal')
-            print('meal')
-            print(meal)
-            print(type(meal['id']))
-            for obj_OrderedMeals in objs_OrderedMeals:
-                print(obj_OrderedMeals.id)
-                print(type(obj_OrderedMeals.id))
-                if obj_OrderedMeals.id == meal['id']:
-                    print('change meal')
-                    obj_OrderedMeals.number_of_meals = meal.number_of_meals
-                    obj_OrderedMeals.save()
+            obj_Meal = Meal.objects.get(pk=meal['id'])
+            obj_OrderedMeal = OrderedMeals.objects.get(meal_id=obj_Meal, order_id=obj_Order)
+            obj_OrderedMeal.number_of_meals = meal['number_of_meals']
+            obj_OrderedMeal.save()
 
         return Response(f'{order_id} updated')
+    
+@api_view(['PUT'])
+def end_order(request):
+    if request.method == "PUT":
+        waiter_id = request.data['waiterId']
+        order_id = request.data['orderId']
+        # payment method to add in put
+        # defult cash
+        obj_Order = Order.objects.get(pk=order_id)
+        obj_Order.order_ends = timezone.now()
+        obj_Order.payment_method = 'cash'
+        obj_Order.save()
         
-
+        obj_Waiter = Waiter.objects.get(user_id=waiter_id)
+        obj_WaiterOrder = WaiterOrder.objects.get(waiter_id=obj_Waiter, order_id=obj_Order )
+        obj_WaiterOrder.is_closed = True
+        obj_WaiterOrder.save()
+        return Response(f'{order_id} end')
 
 class CreateOrderView(APIView):
     serializer_class = CreateOrderSerializer
@@ -94,8 +97,6 @@ class CreateOrderView(APIView):
                           )
             
             order.save()
-            print('saving kitchen')
-            print(f'\n\n\n\n\n {order.id} \n\n\n\n\n\n ')
             kitchen_order = KitchenOrder(order_id = order)
             kitchen_order.save()
 
