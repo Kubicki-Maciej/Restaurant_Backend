@@ -15,12 +15,7 @@ from kitchen.models import KitchenOrder
 from core.models import CustomUser
 
 from django.contrib.auth.decorators import login_required, permission_required
-
-
-
-
 # Create your views here.
-
 # @login_required
 # @permission_required('order.add_order', raise_exception=True)
 @api_view(['POST'])
@@ -41,7 +36,7 @@ def update_order(request):
     if request.method == "POST":
         # find diffrance between update and order ?
         order_id = request.data['orderId']
-        meals = get_orders(request.data['orderedMeals'])
+        meals = request.data['orderedMeals']
         obj_Order = Order.objects.get(pk=order_id)
         for meal in meals:
             obj_Meal = Meal.objects.get(pk=meal['id'])
@@ -103,5 +98,3 @@ class CreateOrderView(APIView):
             return Response(OrderSerializer(order).data, status=status.HTTP_201_CREATED)
         else:
             return Response({'Bad Request': 'Invalid data...'}, status=status.HTTP_400_BAD_REQUEST)
-        
-

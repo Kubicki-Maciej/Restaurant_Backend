@@ -31,15 +31,14 @@ def get_all_waiter_orders(request):
 def create_waiter_order(request):
     if request.method =='POST':
         waiter = request.data['waiter']
+        type(waiter)
         orders = request.data['order']['ordered_items']
-        print(waiter)
-        print(orders)
-        get_user = CustomUser.objects.get(id=waiter['id'])
+        get_user = CustomUser.objects.get(id=waiter)
         get_waiter_obj = Waiter.objects.get(user_id = get_user)      
         created_order = Order.objects.create(user_id=get_user ,ean_code=object_index.generate_ean_order_number(), order_number=object_index.generate_order_number())
         for meal in orders:
             meal_obj  = Meal.objects.get(id=meal['id'])
-            ordered_meal = OrderedMeals.objects.create(order_id=created_order, meal_id=meal_obj, number_of_meals=meal['number_of_meals'], comments=meal['comments'])
+            ordered_meal = OrderedMeals.objects.create(order_id=created_order, meal_id=meal_obj, number_of_meals=meal['number_of_meals'], comments=meal['comment'])
             ordered_meal.save()
         KitchenOrder.objects.create(order_id=created_order).save()
         WaiterOrder.objects.create(waiter_id=get_waiter_obj, order_id=created_order).save()
@@ -64,7 +63,7 @@ def get_all_waiter_history_orders(request):
         waiter_id = request.data['waiter_id']
         user = CustomUser.objects.get(id=waiter_id)
         waiter = Waiter.objects.get(user_id=user)
-        waiter_orders = WaiterOrder.objects.filter(waiter_id=waiter).exclude(is_closed=True)
+        waiter_orders = WaiterOrder.objects.filter(waiter_id=waiter).exclude(is_closed=False)
         serializer = WaiterOrderWithAllMealsSerializer(waiter_orders, many=True)
         return Response(serializer.data)
 
