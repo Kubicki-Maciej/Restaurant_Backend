@@ -2,7 +2,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth.models import Group
 from rest_framework import serializers
 from django.contrib.auth import get_user_model, authenticate
-
+from .models import CustomUser
 UserModel= get_user_model()
 
 class GroupSerializer(serializers.ModelSerializer):
@@ -71,3 +71,19 @@ class UserGroupAddSerializer(serializers.ModelSerializer):
         user.role = group_name
         user.groups.add(group)
         user.save()    
+
+
+class WaiterNameSerializer(serializers.ModelSerializer):
+    waiter_name = serializers.SerializerMethodField(read_only=True)
+    waiter_id = serializers.SerializerMethodField(read_only=True)
+
+    class Meta:
+        model = CustomUser
+        fields = ["waiter_id", "waiter_name"]
+
+    def get_waiter_id(self,obj):
+        return obj.id
+    
+    def get_waiter_name(self, obj):
+        return obj.username
+

@@ -25,12 +25,29 @@ def get_kitchen_orders_inprogress(request):
         return Response({'Error 001'})
     
 @api_view(['GET'])
-def test_kitchen_orders(request):
+def get_kitchen_orders_waiting(request):
+
     if request.method == 'GET':
         order_kitchen = KitchenOrder.objects.filter(is_done=False)
         if order_kitchen:
-            serializer = FullInformationKitchenOrder(order_kitchen, many=True)
+            serializer = KitchenOrderSerializer(order_kitchen, many=True)
+            print(serializer)
             return Response(serializer.data)
+        else:
+            return Response({'Empty kitchen orders'})
+    else:
+        return Response({'Error 001'})
+    
+@api_view(['GET'])
+def test_kitchen_orders(request):
+    if request.method == 'GET':
+        order_kitchen_waiting = KitchenOrder.objects.filter(is_done=False).filter(order_status='WAITING')
+        order_kitchen_in_progress = KitchenOrder.objects.filter(is_done=False).filter(order_status='IN_PROGRESS')
+        if order_kitchen_waiting:
+            serializer_waiting = FullInformationKitchenOrder(order_kitchen_waiting, many=True)
+            serializer_in_progress = FullInformationKitchenOrder(order_kitchen_in_progress, many=True)
+            return Response({"waiting":serializer_waiting.data,
+                             "in_progress": serializer_in_progress.data})
         else:
             return Response({'Empty kitchen orders'})
     else:
