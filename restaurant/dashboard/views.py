@@ -1,6 +1,5 @@
 from django.shortcuts import render
-from django.db.models import Sum
-from django.db.models import Count
+from django.db.models import Sum, Count
 
 from rest_framework import status
 from rest_framework.decorators import api_view
@@ -15,13 +14,15 @@ from order.serializers import OrderedMealsSerializer
 from core.models import CustomUser
 from core.serializers import WaiterNameSerializer
 # 
-from waiter.models import Waiter , WaiterOrder
+from waiter.models import Waiter , WaiterOrder, LogedWaiter
 from waiter.serializer import WaiterOrderWithSumDishesSerializer
 #  
 from kitchen.models import KitchenOrder
 from kitchen.serializers import KitchenOrderShortSerializer, FullInformationKitchenOrder
+# 
+from storage.models import Product, ProductInStorage, ProductMinimal
 
-from dashboard.serializers import CountSerializer
+from dashboard.serializers import CountSerializer, ProductNameSerializer, WaitersStatusSerializer
 import datetime
 from collections import defaultdict
 
@@ -146,6 +147,67 @@ def get_orders_in_progress_and_waiting(request):
     else:
         return Response({'Error 001'})
 
+    
+@api_view(["GET"])
+def get_magazine_stock(request):
+    if request.method == 'GET':
+        products = ProductInStorage.objects.values('product_id').annotate(sum=Sum('number_of_product')).order_by('product_id')
+        print(products)
+        for product in products:
+            obj_product = Product.objects.get(pk = product["product_id"])
+            product["name"] = obj_product.name
+            
+        # serializer = ProductNameSerializer(products ,many=True)
+        return Response(products , status=status.HTTP_200_OK) 
+
+
+@api_view(["GET"])
+def check_magazine_stock(request):
+    if request.method == 'GET':
+        products = ProductInStorage.objects.values('product_id').annotate(sum=Sum('number_of_product')).order_by('product_id')
+        products_minimal = ProductMinimal.objects.all()
+
+        print('products_minimal')
+        print(products_minimal)
+
+        print('products')
+        print(products)
+        # to optimazie this section of code should join two table 
+        combined_products = []
+
+
+        a = products[0]
+        print(a['sum'])
+        print('a')
+        print(type(a))
+        for minimal in products_minimal:
+            temp_product = products.get(product_id = minimal.product_id.pk)
+            if (minimal.expected_quantity > temp_product["sum"]):
+                p = Product.objects.get(pk= temp_product["product_id"])
+                combined_products.append({"id": temp_product["product_id"], "name": p.name , "quantity": temp_product["sum"], "good_stock_value": minimal.expected_quantity})
+
+        
+        # combined_products = products_minimal.union(products).order_by("product_id")
+        print('combined_products')
+        print(combined_products)
+
+        return Response({'products':combined_products}, status=status.HTTP_200_OK)
+    
+@api_view(['GET'])
+def get_waiters_status(request):
+    if request.method == 'GET':
+        data = LogedWaiter.objects.all()
+        serializer = WaitersStatusSerializer(data, many=True)
+        list_loged_in = []
+        list_loged_off = []
+        for waiter in serializer.data:
+            if waiter['is_logged'] == True:
+                list_loged_in.append(waiter)
+            else:
+                list_loged_off.append(waiter)
+
+        return Response({"logged_in_waiters":list_loged_in,'logged_out_waiters':list_loged_off}, status=status.HTTP_200_OK)
+
 def group_meals(keys):
     temp_dict = {}
     for key in keys:
@@ -171,11 +233,10 @@ def find_used_meals(data_meal_names, temp_dict):
 def date_converter(date):
     """ return start, end date"""
     if date:
-        # print('@@@@@@@@@@@@@@@@@@@@@')
-        # print(date)
+
         start_date_t = date['startDate'].split("T")[0].split("-")
         end_date_t = date['dateEnd'].split("T")[0].split("-")
-        # start_date 0: year, 1: month, 2: day
+
         start_date = datetime.datetime(int(start_date_t[0]), int(start_date_t[1]), int(start_date_t[2]))
         end_date = datetime.datetime(int(end_date_t[0]), int(end_date_t[1]), int(end_date_t[2]))
         return start_date , end_date

@@ -12,11 +12,21 @@ from core.models import CustomUser
 
 from meals.serializers import OrderMealSerialzer
 from order.serializers import OrderSerializer, CreateOrderSerializer, OrderedMealsSerializer
-from waiter.serializer import WaiterOrderSerializer, WaiterSerializer, WaiterOrderWithAllMealsSerializer
+from waiter.serializer import WaiterOrderSerializer, WaiterSerializer, WaiterOrderWithAllMealsSerializer, WaiterOrderWithCostSerializer
 from core.barcode import object_index
 from waiter.validations import get_orders, get_waiter
+
+# from datetime import datetime, timedelta
 # Create your views here.
 
+
+@api_view(['GET'])
+def get_waiters_orders(request):
+    # two_days_ago = datetime.now() - timedelta(days=2)
+    # all_orders = Order.objects.filter(order_start__gte =two_days_ago.strftime('%Y-%m-%d') ) 
+    all_orders_ = WaiterOrder.objects.filter(is_closed=False)
+    serializer = WaiterOrderWithCostSerializer(all_orders_, many=True)
+    return Response(serializer.data)
 
 @api_view(['POST'])
 def get_all_waiter_orders(request):

@@ -24,7 +24,6 @@ def get_all_products(request):
 @api_view(['GET',])
 def get_product(request, pk):
     if request.method == "GET":
-        print('1')
         product = Product.objects.get(pk=pk)
         print(product)
         serializer = ProductSerializer(product, many=False)
@@ -190,4 +189,3 @@ class CreateProductInStorageView(APIView):
             return Response(ProductInStorageSerializer(pis).data, status=status.HTTP_201_CREATED)
         else:
             return Response({'Bad Request': 'Invalid data...'}, status=status.HTTP_400_BAD_REQUEST)
-        

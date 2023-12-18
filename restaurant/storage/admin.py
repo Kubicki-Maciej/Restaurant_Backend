@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from storage.models import Product, ProductInStorage , Storage
+from storage.models import Product, ProductInStorage , Storage, ProductMinimal
 # Register your models here.
 
 class ProductAdmin(admin.ModelAdmin):
@@ -30,11 +30,17 @@ class ProductInStorageAdmin(admin.ModelAdmin):
 
 
 
+
 class StorageAdmin(admin.ModelAdmin):
     list_display = ['name']
+
+
+class ProductMinimalAdmin(admin.ModelAdmin):
+    list_display = ['product_id']
 
 
 admin.site.register(Product, ProductAdmin)
 admin.site.register(ProductInStorage, ProductInStorageAdmin)
 admin.site.register(Storage, StorageAdmin)
+admin.site.register(ProductMinimal, ProductMinimalAdmin)
 

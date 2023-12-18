@@ -2,6 +2,8 @@
 from django.shortcuts import render
 from django.contrib.auth import get_user_model, login, logout, authenticate
 from django.contrib.auth.models import Group
+from django.contrib.auth.models import User
+from waiter.models import Waiter, LogedWaiter
 
 # rest
 from rest_framework.views import APIView
@@ -14,19 +16,50 @@ from core.serializers import UserLoginSerializer, UserRegisterSerializer, UserSe
 # Validation
 from core.validations import validate_password, custom_validation, validate_username 
 
-from core.models import AbstractUser, CustomUserManager
+from core.models import AbstractUser, CustomUserManager, CustomUser
 
 class UserRegister(APIView):
     permission_classes = (permissions.AllowAny,)
     
     def post(self, request):
         clean_data = custom_validation(request.data)
+        
         serializer = UserRegisterSerializer(data=clean_data)
         if serializer.is_valid(raise_exception=True):
-            user = serializer.create(clean_data)
+            user = serializer.create(clean_data) 
+            print(user)
             if user:
                 return Response(serializer.data, status=status.HTTP_201_CREATED)
+
             return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
+class CreateWaiterUserRegister(APIView):
+	permission_classes = (permissions.AllowAny,)
+    
+	def post(self, request):
+		clean_data = custom_validation(request.data)
+		serializer = UserRegisterSerializer(data=clean_data)
+		if serializer.is_valid():
+			user = serializer.create(clean_data)
+			
+			get_user = CustomUser.objects.get(email=clean_data['email'])
+			group = Group.objects.get(name = "waiters")
+			get_user.role = "waiters"
+			get_user.groups.add(group)
+			get_user.save()
+
+			# add user to waiter table
+			waiter = Waiter(user_id = get_user, waiter_name= clean_data['username'])
+			waiter.save()	
+			# add waiter to login system
+			login_waiter = LogedWaiter(waiter_id = waiter, is_logged= False)
+			login_waiter.save(0)
+			
+			return Response('Problem with adding waiter',status=status.HTTP_200_OK)
+		
+		return Response(status=status.HTTP_400_BAD_REQUEST)
+		
 
 #{"username": "testone" , "password":"test1234"}
 class UserLogin(APIView):
@@ -77,18 +110,6 @@ class UserView(APIView):
 
 """ ADD PERMISIONS ONLY FOR ADMIN / OWNER """
 
-@api_view(['POST'])	
-def set_user_to_group(request):
-    if request.method == 'POST':
-        data= request.data
-        group_name = data['group']
-        user_object_id = data['user_id']
-        serializer = UserGroupAddSerializer(data=data)
-        serializer.set_user_to_group(user_object_id, group_name)
-
-        return Response({f'Użytkownik {user_object_id} dodany do grupy {group_name}'})
-    
-    return Response({'Something went wrong'})
 
 
 #{ "group": "waiters" , "user_id": 2}

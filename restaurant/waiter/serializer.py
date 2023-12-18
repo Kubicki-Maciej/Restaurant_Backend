@@ -53,3 +53,28 @@ class WaiterOrderWithSumDishesSerializer(serializers.ModelSerializer):
             sum_price += meal_price * ordered_meal.number_of_meals
 
         return sum_price
+    
+
+class WaiterOrderWithCostSerializer(serializers.ModelSerializer):
+    
+    waiter_name = serializers.SerializerMethodField(read_only=True)
+    total_meal_cost = serializers.SerializerMethodField(read_only=True)
+    order_id = serializers.SerializerMethodField(read_only=True)
+    class Meta:
+        model = WaiterOrder
+        fields = ['id',  'total_meal_cost', 'waiter_name', 'order_id']
+
+    def get_waiter_name(self,obj):
+        return obj.waiter_id.waiter_name
+    
+    def get_order_id(self,obj):
+        return obj.order_id.pk
+
+    def get_total_meal_cost(self, obj):
+        
+        all_meals = OrderedMeals.objects.filter(pk = obj.order_id.id)
+        order_count = 0
+        for item in all_meals:
+            order_count += item.meal_id.meal_cost * item.number_of_meals
+        return order_count
+    

@@ -5,4 +5,6 @@ urlpatterns = [
     path('create_order', CreateOrderView.as_view()),
     path('update_order', view=update_order),
     path('end_order', view=end_order),
+    # path('get_waiters_orders', view=get_waiters_orders),
+
 ]

@@ -72,7 +72,6 @@ def get_categorys_and_all_meals(reueqst):
         return Response(serializer.data)
 
 
-
 class CreateMeal(APIView):
     serializer_class = CreateMealSerializer
     # https://www.django-rest-framework.org/api-guide/relations/#custom-relational-fields

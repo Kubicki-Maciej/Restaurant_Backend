@@ -43,8 +43,3 @@ class MealInCategory(models.Model):
          permissions = [
             ('codename', 'mealincategory'),
         ]
-
-
-
-
-

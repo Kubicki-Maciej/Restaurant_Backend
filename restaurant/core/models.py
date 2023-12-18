@@ -43,7 +43,7 @@ class CustomUser(AbstractUser):
         ('subscriber', 'subscriber'),
         ('moderator', 'moderator'),
         
-    )
+    ) 
 
     ROLE = (
         ('none','none'),

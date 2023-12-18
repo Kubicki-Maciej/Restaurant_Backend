@@ -33,6 +33,7 @@ class Product(models.Model):
     class Meta:
         unique_together=(('name', 'product_type'))
 
+
 class Storage(models.Model):
     name = models.CharField(max_length=255)
     storage_EAN = models.IntegerField(blank=True, null=True)
@@ -65,5 +66,5 @@ class ProductInStorage(models.Model):
 
 
 class ProductMinimal(models.Model):
-    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    product_id = models.ForeignKey(Product, on_delete=models.CASCADE)
     expected_quantity = models.DecimalField(max_digits=10, decimal_places=3, default=0.0)

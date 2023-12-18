@@ -10,10 +10,12 @@ from order.validations import get_orders
 from waiter.models import Waiter, WaiterOrder
 from meals.models import Meal
 from order.models import Order, OrderedMeals
-from order.serializers import OrderSerializer, CreateOrderSerializer
+from order.serializers import OrderSerializer, CreateOrderSerializer, OrderWithCostSerializer
 from kitchen.models import KitchenOrder
 from core.models import CustomUser
 
+
+from datetime import datetime, timedelta
 from django.contrib.auth.decorators import login_required, permission_required
 # Create your views here.
 # @login_required
@@ -63,6 +65,7 @@ def end_order(request):
         obj_WaiterOrder.is_closed = True
         obj_WaiterOrder.save()
         return Response(f'{order_id} end')
+    
 
 class CreateOrderView(APIView):
     serializer_class = CreateOrderSerializer

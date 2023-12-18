@@ -59,6 +59,25 @@ class OrderedMealsWithCostSerializer(serializers.ModelSerializer):
         return obj.meal_id.meal_cost * obj.number_of_meals
     
 
+class OrderWithCostSerializer(serializers.ModelSerializer):
+    
+    waiter_name = serializers.SerializerMethodField(read_only=True)
+    total_meal_cost = serializers.SerializerMethodField(read_only=True)
+    class Meta:
+        model = Order
+        fields = ['id',  'total_meal_cost', 'waiter_name']
+
+    def get_waiter_name(self,obj):
+        return obj.user_id.username
+
+    def get_total_meal_cost(self, obj):
+        all_meals = OrderedMeals.objects.filter(pk = obj.pk)
+        order_count = 0
+        for item in all_meals:
+            order_count += item.meal_id.meal_cost * item.number_of_meals
+        return order_count
+    
+
 class OrderedWaiterMealsSerializer(serializers.ModelSerializer):
     meals = serializers.SerializerMethodField(read_only=True)
     class Meta:
