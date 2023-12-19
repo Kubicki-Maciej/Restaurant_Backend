@@ -57,6 +57,7 @@ class CustomUser(AbstractUser):
     status = models.CharField(max_length=100, choices=STATUS, default='regular')
     role = models.CharField(max_length=100, choices=ROLE, default='none')
     description = models.TextField("Description", max_length=600, default='', blank=True)
+    loginnumber = models.IntegerField(default=1111)
 
     objects = CustomUserManager()
 

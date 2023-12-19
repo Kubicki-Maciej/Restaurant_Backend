@@ -48,7 +48,7 @@ class UserSerializer(serializers.ModelSerializer):
     groups_name = serializers.SerializerMethodField(read_only=True)
     class Meta:
         model = UserModel
-        fields = ('id','username', 'email', 'groups', 'status', 'role', 'email', 'last_login', 'groups_name')
+        fields = ('id','username', 'email', 'groups', 'status', 'role', 'email', 'last_login', 'groups_name', 'loginnumber')
 
     def get_groups_name(self, obj):
         # user = UserModel.objects.get(id=obj.id)
@@ -86,4 +86,5 @@ class WaiterNameSerializer(serializers.ModelSerializer):
     
     def get_waiter_name(self, obj):
         return obj.username
+
 

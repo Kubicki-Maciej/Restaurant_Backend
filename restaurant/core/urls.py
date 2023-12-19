@@ -9,5 +9,7 @@ urlpatterns = [
 	path('register_waiter', CreateWaiterUserRegister.as_view(), name='waiter_register'),
     # path('set_to_group', view=set_user_to_group, name="group waiters"),
     path('all_users', view=get_all_users, name="get_all_users"),
-    path('get_user/<int:id_user>', view=get_groups_for_user, name="get_groups_for_user")   
+    path('get_user/<int:id_user>', view=get_groups_for_user, name="get_groups_for_user") , 
+    path('get_user_information', view=get_user_information, name="get_user_information") ,  
+    path('change_user_info', view=change_user_info, name="change_user_info") ,  
 ]

@@ -110,8 +110,6 @@ class UserView(APIView):
 
 """ ADD PERMISIONS ONLY FOR ADMIN / OWNER """
 
-
-
 #{ "group": "waiters" , "user_id": 2}
 @api_view(['GET'])
 def get_all_users(request):
@@ -123,7 +121,6 @@ def get_all_users(request):
 			serializer = UserSerializer(all_users, many=True)
 			return Response(serializer.data)
 		return Response({"Error with geting all users"})
-	
 
 @api_view(['GET'])
 def get_groups_for_user(request, id_user):
@@ -138,3 +135,24 @@ def get_groups_for_user(request, id_user):
 
 		})
 	return Response(group_info)
+
+@api_view(['GET'])
+def get_user_information(request):
+	if request.method == 'GET':
+		
+		get_users = CustomUser.objects.filter(role="waiters")
+
+		serializer = UserSerializer(get_users,many=True)
+		print(get_users)
+		return Response(serializer.data)
+
+@api_view(['PUT'])
+def change_user_info(request):
+	if request.method == 'PUT':
+		user_id = request.data['id']
+
+		get_user = CustomUser.objects.get(pk=user_id)
+		get_user.loginnumber = request.data['loginnumber']
+		get_user.password = request.data['password']
+		get_user.save()
+		return Response(status=status.HTTP_200_OK)
