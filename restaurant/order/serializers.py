@@ -43,11 +43,13 @@ class OrderedMealsSerializer(serializers.ModelSerializer):
     
 class OrderedMealsWithCostSerializer(serializers.ModelSerializer):
     meal_name = serializers.SerializerMethodField(read_only=True)
-    # meal_cost = serializers.SerializerMethodField(read_only=True)
-    total_meal_cost = serializers.SerializerMethodField(read_only=True)
+    meal_cost = serializers.SerializerMethodField(read_only=True)
+    t_meal_cost = serializers.SerializerMethodField(read_only=True)
+    number_of_meals = serializers.SerializerMethodField(read_only=True)
+ 
     class Meta:
         model = OrderedMeals
-        fields = ['id', 'meal_name',  'total_meal_cost']
+        fields = ['id', 'meal_name',  'meal_cost', 'number_of_meals', 't_meal_cost']
 
     def get_meal_name(self, obj):
         return obj.meal_id.meal_name
@@ -55,7 +57,10 @@ class OrderedMealsWithCostSerializer(serializers.ModelSerializer):
     def get_meal_cost(self, obj):
         return obj.meal_id.meal_cost
     
-    def get_total_meal_cost(self, obj):
+    def get_number_of_meals(self, obj):
+        return obj.number_of_meals
+    
+    def get_t_meal_cost(self, obj):
         return obj.meal_id.meal_cost * obj.number_of_meals
     
 

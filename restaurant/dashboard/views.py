@@ -10,7 +10,7 @@ from meals.models import Meal
 # 
 from order.models import Order, OrderedMeals
 from order.serializers import OrderedMealsSerializer
-# waiter models 
+#
 from core.models import CustomUser
 from core.serializers import WaiterNameSerializer
 # 
@@ -18,7 +18,7 @@ from waiter.models import Waiter , WaiterOrder, LogedWaiter
 from waiter.serializer import WaiterOrderWithSumDishesSerializer
 #  
 from kitchen.models import KitchenOrder
-from kitchen.serializers import KitchenOrderShortSerializer, FullInformationKitchenOrder
+from kitchen.serializers import KitchenOrderShortSerializer, FullInformationKitchenOrder, KitchenOrderSerializer, FullInformationKitchenOrderWithCost
 # 
 from storage.models import Product, ProductInStorage, ProductMinimal
 
@@ -26,10 +26,6 @@ from dashboard.serializers import CountSerializer, ProductNameSerializer, Waiter
 import datetime
 from collections import defaultdict
 
-# Create your views here.
-
-
-# table sold items by date
 
 @api_view(['POST'])
 def get_food_by_date(request):
@@ -207,6 +203,32 @@ def get_waiters_status(request):
                 list_loged_off.append(waiter)
 
         return Response({"logged_in_waiters":list_loged_in,'logged_out_waiters':list_loged_off}, status=status.HTTP_200_OK)
+
+@api_view(['GET'])
+def current_orders(request):
+    if request.method == 'GET':
+        kitchen_order_in_progress = KitchenOrder.objects.filter(is_done=False, order_status='IN_PROGRESS')
+        kitchen_order_waiting = KitchenOrder.objects.filter(is_done=False, order_status='WAITING')
+        
+    
+        serializer_in_progress = FullInformationKitchenOrder(kitchen_order_in_progress, many=True)
+        serializer_in_waiting  = FullInformationKitchenOrder(kitchen_order_waiting, many=True)
+        
+        data = {"waiting":serializer_in_waiting.data, "in_progress":serializer_in_progress.data}
+        return Response(data)
+   
+    else:
+        return Response({'Error 001 - problem with current orders, dashboard/current_orders'})
+    
+@api_view(['GET'])
+def all_orders(request):
+    if request.method == 'GET':
+        kitchen_orders = KitchenOrder.objects.all()
+        serializer = FullInformationKitchenOrderWithCost(kitchen_orders, many=True)        
+        return Response(serializer.data)
+    else:
+        return Response({'Error 002 - problem with all orders - problem with all_orders, dashboard/all_orders'})
+    
 
 def group_meals(keys):
     temp_dict = {}

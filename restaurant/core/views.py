@@ -156,3 +156,4 @@ def change_user_info(request):
 		get_user.password = request.data['password']
 		get_user.save()
 		return Response(status=status.HTTP_200_OK)
+	
