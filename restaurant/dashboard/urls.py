@@ -1,5 +1,5 @@
 from django.urls import path
-from dashboard.views import get_food_by_date, get_all_waiters_order, get_active_orders, get_kitchen_orders, get_orders_in_progress_and_waiting, get_magazine_stock, check_magazine_stock, get_waiters_status, current_orders, all_orders
+from dashboard.views import get_food_by_date, get_all_waiters_order, get_active_orders, get_kitchen_orders, get_orders_in_progress_and_waiting, get_magazine_stock, check_magazine_stock, get_waiters_status, current_orders, all_orders, get_kitchen_product, create_new_dish, create_category, get_categorys, get_dishes_not_in_selected_category, add_dish_to_category, get_all_categorys_and_meals, get_dishes_in_category, remove_meal_from_category, hide_show_category, create_product, create_storage
 urlpatterns = [
     path('t', view=get_food_by_date),
     path('a', view=get_all_waiters_order),
@@ -11,4 +11,16 @@ urlpatterns = [
     path('get_waiters_status', view=get_waiters_status),
     path('current_orders', view=current_orders),
     path('all_orders', view=all_orders),
+    path('kitchen_products', view=get_kitchen_product),
+    path('create_new_dish', view=create_new_dish),
+    path('create_category', view=create_category),
+    path('get_categorys', view=get_categorys),
+    path('get_dishes_not_in_selected_category', view=get_dishes_not_in_selected_category),
+    path('add_dish_to_category', view=add_dish_to_category),
+    path('get_all_categorys_and_meals', view=get_all_categorys_and_meals),
+    path('get_dishes_in_category', view=get_dishes_in_category),
+    path('remove_meal_from_category', view=remove_meal_from_category),
+    path('hide_show_category', view=hide_show_category),
+    path('create_product', view=create_product),
+    path('create_storage', view=create_storage),
 ]

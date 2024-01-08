@@ -67,7 +67,7 @@ def create_meal(request):
 def get_categorys_and_all_meals(reueqst):
     
     if reueqst.method =="GET":
-        all_category = CategoryMenu.objects.all()
+        all_category = CategoryMenu.objects.all().exclude(category_show=False)
         serializer = CategorySerializer(all_category, many=True)
         return Response(serializer.data)
 

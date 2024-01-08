@@ -6,7 +6,7 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from meals.models import Meal
+from meals.models import Meal, Ingredient, CategoryMenu, MealInCategory
 # 
 from order.models import Order, OrderedMeals
 from order.serializers import OrderedMealsSerializer
@@ -20,10 +20,13 @@ from waiter.serializer import WaiterOrderWithSumDishesSerializer
 from kitchen.models import KitchenOrder
 from kitchen.serializers import KitchenOrderShortSerializer, FullInformationKitchenOrder, KitchenOrderSerializer, FullInformationKitchenOrderWithCost
 # 
-from storage.models import Product, ProductInStorage, ProductMinimal
-
-from dashboard.serializers import CountSerializer, ProductNameSerializer, WaitersStatusSerializer
+from storage.models import Product, ProductInStorage, ProductMinimal, Storage
+from storage.serializers import ProductDashboardSerializer
+#
+ 
+from dashboard.serializers import CountSerializer, ProductNameSerializer, WaitersStatusSerializer, CategorySerializer, DishSerializer, MealInCategoryOnlyMealPKSerializer, CategoryAndMealSerializer
 import datetime
+
 from collections import defaultdict
 
 
@@ -229,6 +232,135 @@ def all_orders(request):
     else:
         return Response({'Error 002 - problem with all orders - problem with all_orders, dashboard/all_orders'})
     
+@api_view(['GET'])
+def get_kitchen_product(request):
+    if request.method == 'GET':
+
+        products = Product.objects.all()
+        serializer = ProductDashboardSerializer(products,many=True)            
+        return Response(serializer.data)
+    
+@api_view(['POST'])
+def create_new_dish(request):
+    if request.method == 'POST':
+
+        data = request.data
+        print(data)
+        created_meal = Meal.objects.create(meal_name=data["meal"]["dishname"], meal_cost=data["meal"]["price"])
+        created_meal.save()
+        ingredients = data['ingredients']
+
+        for ingredient in ingredients:
+            product_used = Product.objects.get(pk=ingredient['id_ingredient'])
+            temp_ingredient = Ingredient.objects.create(product_id=product_used, meal_id =created_meal, weight_pices_used= ingredient['ingredient_used'])
+            temp_ingredient.save()
+        # print(f"created meal: {meal_name}")
+        return Response("Created")
+    
+@api_view(['POST'])
+def create_category(request):
+    if request.method == 'POST':
+        data = request.data
+        category = CategoryMenu.objects.create(category_name=data["categoryName"])
+        category.save()
+        return Response("created")
+    
+@api_view(['GET'])
+def get_categorys(request):
+    if request.method == 'GET':
+        categorys = CategoryMenu.objects.all()
+        serializer = CategorySerializer(categorys, many=True)        
+        return Response(serializer.data)
+    
+@api_view(['POST'])
+def hide_show_category(request):
+    if request.method == 'POST':
+        category_id = request.data['category_id']
+        category = CategoryMenu.objects.get(pk=category_id)
+        if(category.category_show):
+            category.category_show = False
+        else:
+            category.category_show = True
+        category.save()
+
+        all_category = CategoryMenu.objects.all()
+        serializer = CategorySerializer(all_category,many=True)
+        return Response(serializer.data)
+
+@api_view(['POST'])
+def get_dishes_not_in_selected_category(request):
+    if request.method == 'POST':
+        # {"id_category":5}
+        id_category = request.data['id_category']
+        category = CategoryMenu.objects.get(pk=id_category)
+        meal_in_category = MealInCategory.objects.filter(category_menu_id=category)
+        serializer_category_meal = MealInCategoryOnlyMealPKSerializer(meal_in_category,many=True)
+        list_meal = [meal['meal_id'] for meal in serializer_category_meal.data]
+        print(list_meal)
+        dishes = Meal.objects.all().exclude(id__in=list_meal)
+        serializer = DishSerializer(dishes, many = True)
+        return Response(serializer.data)
+
+@api_view(['POST'])
+def get_dishes_in_category(request):
+        if request.method == 'POST':
+        # {"id_category":5}
+            id_category = request.data['id_category']
+            category = CategoryMenu.objects.get(pk=id_category)
+            meal_in_category = MealInCategory.objects.filter(category_menu_id=category)
+            serializer_category_meal = MealInCategoryOnlyMealPKSerializer(meal_in_category,many=True)
+            list_meal = [meal['meal_id'] for meal in serializer_category_meal.data]
+            print(list_meal)
+            dishes = Meal.objects.all().filter(id__in=list_meal)
+            serializer = DishSerializer(dishes, many = True)
+            return Response(serializer.data)
+    
+@api_view(['POST'])
+def add_dish_to_category(request):
+    if request.method == 'POST':
+        data = request.data
+        meal = Meal.objects.get(id=data['meal_id'])
+        category = CategoryMenu.objects.get(id=data['category_id'])
+        category_meal = MealInCategory.objects.create(meal_id=meal, category_menu_id=category)
+        category_meal.save()
+        return Response("dish added")
+    
+@api_view(['GET'])
+def get_all_categorys_and_meals(reqeust):
+    if reqeust.method == 'GET':
+        data = MealInCategory.objects.all()
+        serializer = CategoryAndMealSerializer(data, many=True)
+        return Response(serializer.data)
+
+@api_view(['DELETE'])
+def remove_meal_from_category(reqeust):
+    if reqeust.method == 'DELETE':
+        data = reqeust.data
+        meal = Meal.objects.get(pk = data['meal_id'])
+        category = CategoryMenu.objects.get(pk = data['category_menu_id'])
+        category_meal = MealInCategory.objects.get(meal_id=meal, category_menu_id=category)
+        print(category_meal)
+        category_meal.delete()
+        
+        return Response('meal deleted')
+
+@api_view(['POST'])
+def create_product(request):
+    if request.method == 'POST':
+        data = request.data
+
+        product = Product(name=data['product_name'],product_type=data['product_type'])
+        product.save()
+        return Response("Proudct Created")
+
+@api_view(['POST'])
+def create_storage(request):
+    if request.method == 'POST':
+        data = request.data
+        product = Storage(name=data['storage_name'])
+        product.save()
+        return Response("Storage Created")
+    
 
 def group_meals(keys):
     temp_dict = {}
@@ -285,4 +417,3 @@ def date_object(date_string):
     splited_date = date_string.split("T")
     date = datetime.date.fromisoformat(splited_date[0])
     return date
-

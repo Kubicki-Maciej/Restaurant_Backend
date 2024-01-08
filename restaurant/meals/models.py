@@ -23,13 +23,13 @@ class Ingredient(models.Model):
 class CategoryMenu(models.Model):
     category_name = models.CharField(max_length=255, blank=True, null=True)
     category_explenation = models.TextField()
+    category_show = models.BooleanField(default=True)
 
     class Meta:
         
          permissions = [
             ('codename', 'categorymenu'),
         ]
-
 
     def __str__(self) -> str:
         return self.category_name
