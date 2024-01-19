@@ -6,12 +6,16 @@ from storage.serializers import PriceProductInStorageSerializer
 
 class IngredientSerializer(serializers.ModelSerializer):
     product_name = serializers.SerializerMethodField(read_only=True)
+    product_type = serializers.SerializerMethodField(read_only=True)
     class Meta:
         model=Ingredient
-        fields = ['product_id','weight_pices_used','product_name']
+        fields = ['product_id','weight_pices_used','product_name', 'product_type']
 
     def get_product_name(self,obj):
         return obj.product_id.name
+
+    def get_product_type(self,obj):
+        return obj.product_id.product_type
 
 """
 
@@ -26,7 +30,7 @@ ZROBIC DZIEDZICZENIE SERIALIZER MEAL DLA CREATE MEAL W VIEW
 class MealSerializer(serializers.ModelSerializer):
     class Meta:
         model = Meal
-        fields = ['meal_name','meal_cost','description']
+        fields = ['id','meal_name','meal_cost','description']
 
 
 

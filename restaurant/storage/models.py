@@ -53,6 +53,7 @@ class ProductInStorage(models.Model):
     number_of_product = models.DecimalField(max_digits=10, decimal_places=3, default=0.0)
     product_waste = models.BooleanField(default=False)
     product_price = models.DecimalField(max_digits=10,decimal_places=2, default=0)
+    is_hide = models.BooleanField(default=False)
 
 
     def __str__(self):

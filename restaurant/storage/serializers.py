@@ -6,7 +6,7 @@ class ProductSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Product
-        fields = ['name', 'product_type']
+        fields = ['id','name', 'product_type']
 
 
 class CreateProductSerializer(serializers.ModelSerializer):
@@ -30,7 +30,7 @@ class ProductInStorageSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProductInStorage
         # fields = "__all__"
-        fields = ['id','product_date_added', 'product_date_expired','products', 'storages', 'number_of_product']
+        fields = ['id','product_date_added', 'product_date_expired','products', 'storages', 'number_of_product', 'product_price']
         # fields = ['product_id', 'product_date_added']
 
     def get_products(self, obj):

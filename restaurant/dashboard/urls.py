@@ -1,5 +1,5 @@
 from django.urls import path
-from dashboard.views import get_food_by_date, get_all_waiters_order, get_active_orders, get_kitchen_orders, get_orders_in_progress_and_waiting, get_magazine_stock, check_magazine_stock, get_waiters_status, current_orders, all_orders, get_kitchen_product, create_new_dish, create_category, get_categorys, get_dishes_not_in_selected_category, add_dish_to_category, get_all_categorys_and_meals, get_dishes_in_category, remove_meal_from_category, hide_show_category, create_product, create_storage
+from dashboard.views import get_food_by_date, get_all_waiters_order, get_active_orders, get_kitchen_orders, get_orders_in_progress_and_waiting, get_magazine_stock, check_magazine_stock, get_waiters_status, current_orders, all_orders, get_kitchen_product, create_new_dish, create_category, get_categorys, get_dishes_not_in_selected_category, add_dish_to_category, get_all_categorys_and_meals, get_dishes_in_category, remove_meal_from_category, hide_show_category, create_product, create_storage,add_product_to_storage, get_products, get_storages, get_product_in_storage, remove_product_in_storage, update_product_in_storage, get_products_exclude_existing,add_ingredient_to_dish, update_dish_ingredient
 urlpatterns = [
     path('t', view=get_food_by_date),
     path('a', view=get_all_waiters_order),
@@ -23,4 +23,13 @@ urlpatterns = [
     path('hide_show_category', view=hide_show_category),
     path('create_product', view=create_product),
     path('create_storage', view=create_storage),
+    path('get_storages', view=get_storages),
+    path('get_products', view=get_products),
+    path('add_product_to_storage', view=add_product_to_storage),
+    path('get_product_in_storage', view=get_product_in_storage),
+    path('update_product_in_storage', view=update_product_in_storage),
+    path('remove_product_in_storage', view=remove_product_in_storage),
+    path('get_products_exclude_existing', view=get_products_exclude_existing),
+    path('add_ingredient_to_dish', view=add_ingredient_to_dish),
+    path('update_dish_ingredient', view=update_dish_ingredient),
 ]

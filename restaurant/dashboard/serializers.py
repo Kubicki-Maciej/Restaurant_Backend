@@ -3,7 +3,7 @@ from django.db.models import Sum
 
 from order.models import Order, OrderedMeals
 from meals.models import Meal, CategoryMenu, MealInCategory
-from storage.models import ProductInStorage
+from storage.models import ProductInStorage, Storage
 from waiter.models import LogedWaiter
 
 class CountSerializer(serializers.ModelSerializer):
@@ -80,3 +80,10 @@ class CategoryAndMealSerializer(serializers.ModelSerializer):
     
     def get_category_id(self, obj):
         return obj.category_menu_id.pk
+    
+
+class StorageSerializer(serializers.ModelSerializer):
+    
+    class Meta:
+        model = Storage
+        fields = '__all__'

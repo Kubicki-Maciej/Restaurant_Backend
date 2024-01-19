@@ -21,7 +21,7 @@ from kitchen.models import KitchenOrder
 from kitchen.serializers import KitchenOrderShortSerializer, FullInformationKitchenOrder, KitchenOrderSerializer, FullInformationKitchenOrderWithCost
 # 
 from storage.models import Product, ProductInStorage, ProductMinimal, Storage
-from storage.serializers import ProductDashboardSerializer
+from storage.serializers import ProductDashboardSerializer, StorageSerializer, ProductSerializer, ProductInStorageSerializer
 #
  
 from dashboard.serializers import CountSerializer, ProductNameSerializer, WaitersStatusSerializer, CategorySerializer, DishSerializer, MealInCategoryOnlyMealPKSerializer, CategoryAndMealSerializer
@@ -360,6 +360,106 @@ def create_storage(request):
         product = Storage(name=data['storage_name'])
         product.save()
         return Response("Storage Created")
+    
+@api_view(['GET'])
+def get_storages(request):
+    if request.method == 'GET':
+        storage = Storage.objects.all()
+        serializer = StorageSerializer(storage , many=True) 
+        return Response(serializer.data)
+    
+@api_view(['GET'])
+def get_products(request):
+    if request.method == 'GET':
+        all_products = Product.objects.all()
+        product_serializer = ProductSerializer(all_products, many=True)
+        return Response(product_serializer.data)
+
+@api_view(['POST'])
+def add_product_to_storage(request):
+    if request.method == 'POST':
+        data = request.data
+        print(data)
+        date = datetime.datetime.strptime(data['date_expired'], '%Y-%m-%d')
+        product = Product.objects.get(id=data['product_id'])
+        storage = Storage.objects.get(id=data['storage_id'])
+        product_in_storage = ProductInStorage(
+            product_id=product,
+            storage_id = storage,
+            product_date_expired=date,
+            number_of_product =data['quantity'],
+            product_price = data['price']
+        )
+        product_in_storage.save()
+        return Response("Data saved")
+
+@api_view(['GET'])
+def get_product_in_storage(reqeust):
+    if reqeust.method=='GET':
+        all_products_in_storage = ProductInStorage.objects.filter(is_hide=False)
+        seralizer = ProductInStorageSerializer(all_products_in_storage, many=True)
+        return Response(seralizer.data)
+
+@api_view(['POST'])
+def update_product_in_storage(request):
+    if request.method=='POST':
+        id = request.data['id']
+        pis = ProductInStorage.objects.get(pk=id)
+        pis.product_date_expired = datetime.datetime.strptime(request.data['product_date_expired'], '%Y-%m-%d')
+        pis.number_of_product = request.data['number_of_product']
+        pis.save()
+        return Response("Product in storage updated")
+
+@api_view(['POST'])
+def remove_product_in_storage(request):
+    if request.method=='POST':
+        id = request.data['id']
+        pis = ProductInStorage.objects.get(pk=id)
+        pis.is_hide = True 
+        pis.save()
+        return Response("Product in storage deleted")
+    
+@api_view(['POST'])
+def get_products_exclude_existing(request):
+    if request.method == 'POST':
+        list_meal = request.data['exclude_meals_id']
+        products = Product.objects.all().exclude(id__in=list_meal)
+        serializer = ProductSerializer(products,many=True)
+        return Response(serializer.data)
+        
+@api_view(['POST'])
+def update_dish_ingredient(request):
+    if request.method == 'POST':
+
+        data = request.data
+        product_id = data['ingredient']['product_id']
+        meal_id = data['id_meal']
+        weight = data['ingredient']['weight_pices_used']
+        product = Product.objects.get(pk=product_id)
+        meal = Meal.objects.get(pk=meal_id)
+        ingredient = Ingredient.objects.get(product_id= product, meal_id= meal)
+        if float(weight) < 0:
+            # delete
+            ingredient.delete()
+            return Response("Delete ingredient")
+
+        else:
+            ingredient.weight_pices_used = weight
+            ingredient.save()
+            return Response("Update ingredient")
+
+@api_view(['POST'])
+def add_ingredient_to_dish(request):
+    if request.method == 'POST':
+        data = request.data
+        product_id = data['ingredient']['product_id']
+        meal_id = data['id_meal']
+        weight = data['ingredient']['weight_pices_used']
+        product = Product.objects.get(pk=product_id)
+        meal = Meal.objects.get(pk=meal_id)
+        ingredient = Ingredient(product_id= product, meal_id= meal, weight_pices_used=weight)
+        ingredient.save()
+        return Response('Product added do dish')
     
 
 def group_meals(keys):
