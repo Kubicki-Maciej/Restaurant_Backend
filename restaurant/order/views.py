@@ -36,15 +36,35 @@ def create_order(request):
 @api_view(['POST'])
 def update_order(request):
     if request.method == "POST":
+        print(request.data)
         # find diffrance between update and order ?
         order_id = request.data['orderId']
         meals = request.data['orderedMeals']
+
         obj_Order = Order.objects.get(pk=order_id)
+
+        all_dish_ordered = OrderedMeals.objects.filter(order_id = obj_Order)
+        list_of_new_items = []
+
         for meal in meals:
-            obj_Meal = Meal.objects.get(pk=meal['id'])
-            obj_OrderedMeal = OrderedMeals.objects.get(meal_id=obj_Meal, order_id=obj_Order)
-            obj_OrderedMeal.number_of_meals = meal['number_of_meals']
-            obj_OrderedMeal.save()
+            is_opereted = False
+            for ordered_meal in all_dish_ordered:
+                
+                if meal['id'] == ordered_meal.meal_id.id:
+                    obj_Meal = Meal.objects.get(pk=meal['id'])
+                    obj_OrderedMeal = OrderedMeals.objects.get(meal_id=obj_Meal, order_id=obj_Order)
+                    obj_OrderedMeal.number_of_meals = meal['number_of_meals']
+                    obj_OrderedMeal.save()
+                    is_opereted=True
+            
+            if is_opereted == False:
+                list_of_new_items.append(meal)
+
+        print(list_of_new_items)
+        for new_meal in list_of_new_items:
+            obj_new_Meal = Meal.objects.get(pk=new_meal['id'])
+            obj_new_OrderedMeal = OrderedMeals.objects.create(meal_id=obj_new_Meal, order_id=obj_Order, number_of_meals=new_meal['number_of_meals'])
+            obj_new_OrderedMeal.save()
 
         return Response(f'{order_id} updated')
     

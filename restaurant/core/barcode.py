@@ -1,6 +1,9 @@
 import json
 import os
 
+dir_path = os.path.dirname(os.path.realpath(__file__))
+
+
 class IndexReader:
 
     def __init__(self, last_shelf, last_vagetable, last_meat, shelf_bar_code, vegetables, meat, ean_order, ean_order_number,number_order):
@@ -54,12 +57,12 @@ class IndexReader:
         self.save_data_to_json()
         return self.ean_order
 
-    def save_data_to_json(self, file_name='E:\\_DJANGO_PROJECTS\\Restaurant_REACT\\backend\\restaurant\\corebar_code.json'):
+    def save_data_to_json(self, file_name=dir_path+'corebar_code.json'):
         json_data = json.dumps(object_index.__dict__)
         with open(file_name, "w") as outfile:
             outfile.write(json_data)
 
-def load_json_file_into_object(file_name='E:\\_DJANGO_PROJECTS\\Restaurant_REACT\\backend\\restaurant\core\\bar_code.json'):
+def load_json_file_into_object(file_name=dir_path+'bar_code.json'):
     loaded_file= json.load(open(file_name))
     object_IndexReader = IndexReader(**loaded_file)
     return object_IndexReader
