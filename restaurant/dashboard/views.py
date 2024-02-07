@@ -142,7 +142,8 @@ def get_orders_in_progress_and_waiting(request):
             return Response({"waiting":serializer_waiting.data,
                              "in_progress": serializer_in_progress.data})
         else:
-            return Response({'Empty kitchen orders'})
+            return Response({"waiting":[],
+                            "in_progress":[]})
     else:
         return Response({'Error 001'})
 
