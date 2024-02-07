@@ -54,6 +54,7 @@ def update_order(request):
                     obj_Meal = Meal.objects.get(pk=meal['id'])
                     obj_OrderedMeal = OrderedMeals.objects.get(meal_id=obj_Meal, order_id=obj_Order)
                     obj_OrderedMeal.number_of_meals = meal['number_of_meals']
+                    obj_OrderedMeal.comments = meal['comments']
                     obj_OrderedMeal.save()
                     is_opereted=True
             
@@ -63,7 +64,7 @@ def update_order(request):
         print(list_of_new_items)
         for new_meal in list_of_new_items:
             obj_new_Meal = Meal.objects.get(pk=new_meal['id'])
-            obj_new_OrderedMeal = OrderedMeals.objects.create(meal_id=obj_new_Meal, order_id=obj_Order, number_of_meals=new_meal['number_of_meals'])
+            obj_new_OrderedMeal = OrderedMeals.objects.create(meal_id=obj_new_Meal, order_id=obj_Order, number_of_meals=new_meal['number_of_meals'], comments=new_meal['comments'])
             obj_new_OrderedMeal.save()
 
         return Response(f'{order_id} updated')

@@ -137,8 +137,8 @@ def get_orders_in_progress_and_waiting(request):
         order_kitchen_waiting = KitchenOrder.objects.filter(is_done=False).filter(order_status='WAITING')[:5]
         order_kitchen_in_progress = KitchenOrder.objects.filter(is_done=False).filter(order_status='IN_PROGRESS')[:5]
         if order_kitchen_waiting:
-            serializer_waiting = FullInformationKitchenOrder(order_kitchen_waiting, many=True)
-            serializer_in_progress = FullInformationKitchenOrder(order_kitchen_in_progress, many=True)
+            serializer_waiting = FullInformationKitchenOrderWithCost(order_kitchen_waiting, many=True)
+            serializer_in_progress = FullInformationKitchenOrderWithCost(order_kitchen_in_progress, many=True)
             return Response({"waiting":serializer_waiting.data,
                              "in_progress": serializer_in_progress.data})
         else:
