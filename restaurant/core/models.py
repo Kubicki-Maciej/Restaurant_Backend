@@ -4,10 +4,6 @@ from django.db import models
 
 # Create your models here.
 class CustomUserManager(BaseUserManager):
-    """
-    Custom user model manager where email is the unique identifier
-    for authentication instead of usernames.
-    """
 
     def create_user(self, username, password, **extra_fields):
         if not username:
@@ -35,7 +31,7 @@ class CustomUser(AbstractUser):
 
     class Meta:
         permissions= (("tier_1", "Can view 3 suggestions"), ("tier_2", "Can view 6 suggestions"),
-        # You can add other custom permissions as required
+        
         )
     
 
@@ -69,10 +65,4 @@ class CustomUser(AbstractUser):
 
 
 
-"""
-"""
 
-
-# https://www.youtube.com/watch?v=diB38AvVkHw
-# https://www.django-rest-framework.org/api-guide/authentication/
-#  https://dev.to/koladev/django-rest-authentication-cmh
